@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nutrition Quiz - Carbohydrates 第五章題庫</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    header h1 {
+      font-size: 1.2rem;
+      margin: 4px 0;
+    }
+    header p {
+      font-size: 0.9rem;
+      margin: 2px 0;
+      color: #555;
+    }
+    .control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .control-bar > * {
+      flex: 1 1 120px;
+    }
+    select,
+    button {
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+    button {
+      cursor: pointer;
+    }
+    button.primary {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+    button.secondary {
+      background: #e5e7eb;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .question-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+    .question-meta {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .question-text {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .option-btn {
+      text-align: left;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid #d4d4d4;
+      background: #fafafa;
+      font-size: 0.92rem;
+    }
+    .option-btn.correct {
+      border-color: #16a34a;
+      background: #dcfce7;
+    }
+    .option-btn.wrong {
+      border-color: #b91c1c;
+      background: #fee2e2;
+    }
+    .result-area {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed #ddd;
+      font-size: 0.9rem;
+    }
+    .result-text.correct {
+      color: #15803d;
+      font-weight: 600;
+    }
+    .result-text.wrong {
+      color: #b91c1c;
+      font-weight: 600;
+    }
+    .explain-toggle {
+      margin-top: 6px;
+    }
+    .explain-box {
+      margin-top: 6px;
+      padding: 8px 10px;
+      background: #eff6ff;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .footer-tip {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Nutrition Quiz：Carbohydrates 第五章</h1>
+      <p>通勤練習版｜點選選項立即判斷對錯｜可查看解析與頁碼</p>
+    </header>
+
+    <div class="control-bar">
+      <select id="questionSelect"></select>
+      <button id="prevBtn" class="secondary">上一題</button>
+      <button id="nextBtn" class="secondary">下一題</button>
+      <button id="shuffleBtn" class="primary">隨機一題</button>
+    </div>
+
+    <div class="question-card">
+      <div id="questionMeta" class="question-meta"></div>
+      <div id="questionText" class="question-text"></div>
+
+      <div id="optionsContainer" class="options"></div>
+
+      <div class="result-area">
+        <div id="resultText" class="result-text"></div>
+        <div class="explain-toggle">
+          <button id="explainBtn" class="secondary">顯示解析</button>
+        </div>
+        <div id="explainBox" class="explain-box"></div>
+      </div>
+    </div>
+
+    <div class="footer-tip">
+      小提示：Safari → 分享 →「加入主畫面」，就可以像 App 一樣打開這個題庫。
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // 題庫資料區：請在這裡填入第 5 章 1–59 題
+    // =========================
+    const questions = [
+      // ⚠️ 以下是示範題，請改成你自己的題目內容
+      {
+        id: 1,
+        chapter: 5,
+        topic: "Carbohydrates",
+        question: "下列何者為單醣 (monosaccharide)？",
+        options: {
+          A: "麥芽糖 (maltose)",
+          B: "乳糖 (lactose)",
+          C: "葡萄糖 (glucose)",
+          D: "蔗糖 (sucrose)",
+        },
+        correct: "C",
+        explanation:
+          "單醣 (monosaccharide) 為最基本的碳水化合物單位，如葡萄糖 (glucose)、果糖 (fructose)、半乳糖 (galactose) 等。本題只有葡萄糖屬單醣；麥芽糖、乳糖、蔗糖皆為雙醣 (disaccharides)。",
+        source: "課本第 5 章，碳水化合物單醣小節，約 p.xx",
+      },
+      {
+        id: 2,
+        chapter: 5,
+        topic: "Carbohydrates",
+        question:
+          "下列何者主要儲存在肝臟與肌肉中，作為動物體內的葡萄糖儲存型態？",
+        options: {
+          A: "澱粉 (starch)",
+          B: "糖原 (glycogen)",
+          C: "纖維素 (cellulose)",
+          D: "果膠 (pectin)",
+        },
+        correct: "B",
+        explanation:
+          "糖原 (glycogen) 為動物體內的葡萄糖儲存形式，主要存在於肝臟與骨骼肌。澱粉為植物之儲存多醣；纖維素與果膠屬膳食纖維 (dietary fiber)。",
+        source: "課本第 5 章，糖原與多醣小節，約 p.xx",
+      },
+      // -------------- 在這下面，依樣畫葫蘆，把第 5 章第 3 題 ~ 第 59 題加進來 --------------
+      // {/* ==============================
+   第 1 題
+   ============================== */
+{
+  id: 1,
+  text: "1. 葡萄糖、半乳糖、果糖是______。",
+  options: ["雙醣類", "水溶性纖維", "單醣類", "多醣類"],
+  correctIndex: 2,
+  explanation:
+    "葡萄糖（glucose）、果糖（fructose）、半乳糖（galactose）均屬於單醣（monosaccharides），是最基本的碳水化合物單位。PDF 中指出單醣是所有醣類消化吸收的最終形態（例如雙醣需由刷狀緣酵素分解為單醣才能吸收）。水溶性纖維屬於膳食纖維，且不被酵素消化；雙醣（如蔗糖、乳糖、麥芽糖）含兩個單醣；多醣如澱粉由多個葡萄糖組成。",
+  source:
+    "《營養學》第5章：單醣類介紹 p.6（葡萄糖、果糖、半乳糖） [oai_citation:0‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 2 題
+   ============================== */
+{
+  id: 2,
+  text: "2. 葡萄糖的另一名稱是______。",
+  options: ["山梨醇", "右旋糖", "左旋糖", "麥芽糖"],
+  correctIndex: 1,
+  explanation:
+    "葡萄糖常被稱為右旋糖（dextrose），因其旋光性使偏振光向右旋轉。山梨醇屬於糖醇而非單醣；左旋糖不是葡萄糖的名稱；麥芽糖為雙醣，由兩個葡萄糖組成。PDF 在碳水結構圖中亦顯示葡萄糖為 D-form（右旋）。",
+  source:
+    "《營養學》第5章：碳水結構 p.4（葡萄糖構造屬於 D-form） [oai_citation:1‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 3 題
+   ============================== */
+{
+  id: 3,
+  text: "3. 三種重要的雙醣類是______。",
+  options: [
+    "乳糖、果糖、麥芽糖",
+    "果糖、葡萄糖、半乳糖",
+    "麥芽糖、蔗糖、乳糖",
+    "蔗糖、果糖、肝醣"
+  ],
+  correctIndex: 2,
+  explanation:
+    "雙醣（disaccharides）由兩個單醣組成，PDF 明列三種重要的雙醣：麥芽糖（maltose）、蔗糖（sucrose）、乳糖（lactose）。果糖、葡萄糖、半乳糖皆是單醣；肝醣是多醣；選項 A 與 D 混合錯誤類型，因此皆不正確。",
+  source:
+    "《營養學》第5章：雙醣類 p.48–49（麥芽糖酶、蔗糖酶、乳糖酶） [oai_citation:2‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 4 題
+   ============================== */
+{
+  id: 4,
+  text: "4. 下列何者是膳食纖維中的非碳水化合物成分？",
+  options: ["肝醣", "果膠", "纖維素", "木質素"],
+  correctIndex: 3,
+  explanation:
+    "膳食纖維大多為不可消化碳水化合物（如纖維素、半纖維素、果膠），但木質素（lignin）例外，它是非碳水化合物的多酚聚合物。PDF 內亦指出膳食纖維並非完全由糖類構成，木質素屬於非醣類纖維。肝醣為人體儲存型多醣，不屬纖維；果膠與纖維素皆為碳水化合物纖維。",
+  source:
+    "《營養學》第5章：膳食纖維 p.55–56（木質素為非碳水纖維） [oai_citation:3‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 5 題
+   ============================== */
+{
+  id: 5,
+  text: "5. 簡單糖類的三種元素是______。",
+  options: ["碳、氫、氧", "碳、氫、氮", "碳、氫、硫", "碳、氮、氧"],
+  correctIndex: 0,
+  explanation:
+    "所有醣類（包括單醣、雙醣、多醣）的化學本質都是由碳（C）、氫（H）、氧（O）構成，常見比例接近 CH2O。PDF 在碳水結構的第一頁即強調碳水化合物的組成元素。氮與硫通常存在於蛋白質或其他含硫化合物，因此其他選項不正確。",
+  source:
+    "《營養學》第5章：碳水結構 p.4（糖、澱粉、纖維＝C、H、O） [oai_citation:4‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 6 題
+   ============================== */
+{
+  id: 6,
+  text: "6. 酵素蔗糖酶可將蔗糖分解成______。",
+  options: [
+    "蔗糖",
+    "乳酸",
+    "葡萄糖 + 果糖",
+    "葡萄糖 + 麥芽糖"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 清楚列出刷狀緣酵素：蔗糖酶（sucrase）將蔗糖分解為葡萄糖 + 果糖；乳糖酶將乳糖分解為葡萄糖 + 半乳糖；麥芽糖酶將麥芽糖分解為兩個葡萄糖。乳酸不屬於醣類消化產物；葡萄糖 + 麥芽糖更不符合任何酵素途徑。",
+  source:
+    "《營養學》第5章：雙醣分解 p.49–50（蔗糖酶產物） [oai_citation:5‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 7 題
+   ============================== */
+{
+  id: 7,
+  text: "7. ______在自然界鮮少單獨存在，可與葡萄糖結合形成雙醣類之乳糖。",
+  options: ["蔗糖", "麥芽糖", "果糖", "半乳糖"],
+  correctIndex: 3,
+  explanation:
+    "乳糖由葡萄糖 + 半乳糖組成，PDF 亦提到半乳糖較少以自由單醣形式存在，主要來自乳糖消化。果糖常以蔗糖形式存在；蔗糖與麥芽糖皆屬雙醣，不是單醣，因此不能與葡萄糖再結合形成乳糖。",
+  source:
+    "《營養學》第5章：單醣 p.6（半乳糖來源） [oai_citation:6‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 8 題
+   ============================== */
+{
+  id: 8,
+  text: "8. 只要葡萄糖鍵是______人類就能消化這種碳水化合物。",
+  options: ["α鍵", "β鍵", "γ鍵", "肽鍵"],
+  correctIndex: 0,
+  explanation:
+    "PDF 指出澱粉（植物儲存型醣）含有 α-1,4 與 α-1,6 glycosidic bonds，因此可被人體酵素分解；但纖維素含 β-1,4 鍵，人體缺乏 cellulase 無法分解。肽鍵是蛋白質上的鍵，不屬於醣類；γ鍵並非常見醣類鍵型。",
+  source:
+    "《營養學》第5章：澱粉結構 p.33–35（α 鍵可消化，β 鍵不可消化） [oai_citation:7‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 9 題
+   ============================== */
+{
+  id: 9,
+  text: "9. 山梨醇是______。",
+  options: [
+    "糖醇",
+    "吸收和代謝比葡萄糖和其它糖類來得慢",
+    "使用於糖果和口香糖",
+    "以上皆是"
+  ],
+  correctIndex: 3,
+  explanation:
+    "山梨醇（sorbitol）是糖醇（sugar alcohol），PDF 中指出糖醇吸收較慢、代謝較慢，因此升糖指數較低，常用於無糖口香糖與糖果。其不易被細菌利用，因此較不易造成蛀牙。以上三項皆符合糖醇的特性。",
+  source:
+    "《營養學》第5章：糖醇特性 p.31（吸收慢、常用於糖果） [oai_citation:8‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 10 題
+   ============================== */
+{
+  id: 10,
+  text: "10. 口香糖和糖果中經常使用的糖醇（甜味劑）是______。",
+  options: ["玉米糖漿", "糊精", "轉化糖", "山梨醇"],
+  correctIndex: 3,
+  explanation:
+    "PDF 對糖醇（如山梨醇、甘露醇）指出其升糖指數低、吸收慢、不易引起蛀牙，因此常使用於口香糖與無糖糖果。玉米糖漿、轉化糖屬於含糖甜味來源；糊精為部分水解澱粉，不是糖醇。",
+  source:
+    "《營養學》第5章：糖醇用途 p.31（山梨醇常用於口香糖） [oai_citation:9‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+}
+      //   id: 3,
+      //   chapter: 5,
+      //   topic: "Carbohydrates",
+      //   question: "在此填入第 3 題題目……",
+      //   options: {
+      //     A: "選項 A 文字",
+      //     B: "選項 B 文字",
+      //     C: "選項 C 文字",
+      //     D: "選項 D 文字",
+      //   },
+      //   correct: "A", // 正確選項代號
+      //   explanation: "在此填入精簡解析，說明為什麼這個選項正確、其他錯誤。",
+      //   source: "寫上出處，例如：課本第 5 章 p.35 表 5-2",
+      // },
+    ];
+    /* ==============================
+   第 11 題
+   ============================== */
+{
+  id: 11,
+  text: "11. 葡萄糖的攝取在身體中的主要功能是______。",
+  options: ["提供能量", "儲存為維生素", "形成脂肪酸", "製造蛋白質"],
+  correctIndex: 0,
+  explanation:
+    "葡萄糖是人體最基本、最主要、最直接可用的能量來源，PDF 中多次強調葡萄糖可立即進入代謝路徑（如醣解、TCA cycle）供應 ATP。雖然過量葡萄糖可轉換成脂肪酸儲存，但這不是『主要功能』。葡萄糖不會轉變成維生素，也不直接用於合成蛋白質。本題重點是：葡萄糖是大腦、紅血球與神經系統的主要能量來源。",
+  source:
+    "《營養學》第5章：醣類能量功能 p.12–13（葡萄糖為主要能量來源）"
+},
+
+/* ==============================
+   第 12 題
+   ============================== */
+{
+  id: 12,
+  text: "12. 體內主要儲存葡萄糖的方式是______。",
+  options: ["乳糖", "肝醣", "麥芽糖", "果膠"],
+  correctIndex: 1,
+  explanation:
+    "人體以肝醣（glycogen）儲存葡萄糖，主要分布於肝臟與骨骼肌。PDF 強調肝醣的分支結構可使葡萄糖迅速釋放。乳糖與麥芽糖是雙醣，不供儲存用途；果膠屬可溶性膳食纖維，与能量儲存無關。",
+  source:
+    "《營養學》第5章：肝醣結構 p.33–35（肝醣為葡萄糖儲存形式）"
+},
+
+/* ==============================
+   第 13 題
+   ============================== */
+{
+  id: 13,
+  text: "13. 澱粉在植物體中主要功能為______。",
+  options: ["提供能量", "儲存能量", "構成酵素", "形成細胞壁"],
+  correctIndex: 1,
+  explanation:
+    "澱粉（starch）是植物的儲存多醣，由直鏈澱粉與支鏈澱粉組成。PDF 指出澱粉的 α-1,4 與 α-1,6 鍵使其可被消化，也展示其與肝醣在結構上的相似性。植物細胞壁的主要成分是纖維素（β 鍵），不是澱粉；酵素由蛋白質構成，與澱粉無關。",
+  source:
+    "《營養學》第5章：澱粉結構 p.33–35（植物能量儲存形式）"
+},
+
+/* ==============================
+   第 14 題
+   ============================== */
+{
+  id: 14,
+  text: "14. 醣類被吸收後，葡萄糖會首先流向______。",
+  options: ["腦與肌肉", "心臟", "門靜脈肝臟", "脂肪細胞"],
+  correctIndex: 2,
+  explanation:
+    "PDF 指出所有單醣吸收後由肝門靜脈（portal vein）直接進入肝臟，肝臟是第一個代謝站，可將葡萄糖用於能量、儲存為肝醣，或釋放至血液供全身使用。其他器官雖然最終會利用葡萄糖，但初始流向是肝臟，而非腦、肌肉或脂肪細胞。",
+  source:
+    "《營養學》第5章：葡萄糖吸收後的代謝流向 p.51（單醣→門靜脈→肝臟） [oai_citation:0‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 15 題
+   ============================== */
+{
+  id: 15,
+  text: "15. 下列何者不是可溶性纖維的特性？",
+  options: [
+    "能形成黏稠凝膠",
+    "可被大腸細菌發酵",
+    "增加腸道蠕動、促進排便",
+    "可降低血膽固醇"
+  ],
+  correctIndex: 2,
+  explanation:
+    "可溶性纖維（pectin、beta-glucan）會形成黏稠凝膠、延緩胃排空、被大腸細菌發酵並生成短鏈脂肪酸（SCFA），且 PDF 提到其可降低血膽固醇。『促進排便、增加蠕動』主要是**非可溶性纖維**（如纖維素），因其增加糞便量與腸壁張力。因此選項 3 是錯誤特性。",
+  source:
+    "《營養學》第5章：可溶性 vs 不可溶性纖維 p.55–56（可溶性會發酵；不可溶性促進蠕動） [oai_citation:1‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 16 題
+   ============================== */
+{
+  id: 16,
+  text: "16. 下列何者不是不可消化寡糖的特性？",
+  options: [
+    "常存在豆類中",
+    "在大腸被細菌發酵",
+    "可造成腸氣",
+    "可被人體酵素完全分解"
+  ],
+  correctIndex: 3,
+  explanation:
+    "不可消化寡糖（如 raffinose、stachyose）存在於豆類與部分蔬菜，PDF 指出人體缺乏分解這些寡糖的酵素，因此會進入大腸被細菌發酵並產生氣體。它們**不能**被人體酵素完全分解，因此選項 4 是錯誤敘述。",
+  source:
+    "《營養學》第5章：不可消化寡糖 p.49–51（可造成腸氣）"
+},
+
+/* ==============================
+   第 17 題
+   ============================== */
+{
+  id: 17,
+  text: "17. 下列關於膳食纖維的敘述何者正確？",
+  options: [
+    "可完全被小腸酵素分解",
+    "完全不被大腸細菌利用",
+    "部分可被發酵產生短鏈脂肪酸",
+    "可轉變為葡萄糖提供能量"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 明確指出可溶性纖維（pectin、beta-glucan）可被大腸細菌發酵，產生短鏈脂肪酸（SCFA）如 acetate、propionate、butyrate，有助腸道健康。小腸沒有分解纖維的酵素，因此不可完全被小腸消化。纖維不會被轉化為葡萄糖，產能方式不同。",
+  source:
+    "《營養學》第5章：纖維發酵→短鏈脂肪酸 p.49–51 [oai_citation:2‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 18 題
+   ============================== */
+{
+  id: 18,
+  text: "18. 血糖指的是______。",
+  options: [
+    "血液中的乳糖濃度",
+    "血液中的果糖濃度",
+    "血液中的葡萄糖濃度",
+    "血液中的醣原濃度"
+  ],
+  correctIndex: 2,
+  explanation:
+    "『血糖（blood glucose）』明確指血液中葡萄糖的濃度，是調節胰島素與升糖激素的主要依據。乳糖是雙醣，正常不會出現在血液中；果糖吸收後迅速在肝臟轉化，不顯著出現在血液循環；醣原（glycogen）儲存在肝臟與肌肉，不會在血液中循環。",
+  source:
+    "《營養學》第5章：血糖調節 p.12–13（血糖意指葡萄糖）"
+},
+
+/* ==============================
+   第 19 題
+   ============================== */
+{
+  id: 19,
+  text: "19. 下列何者不會升高血糖？",
+  options: [
+    "肝醣分解",
+    "糖異生",
+    "胰島素分泌",
+    "醣類攝取"
+  ],
+  correctIndex: 2,
+  explanation:
+    "胰島素（insulin）是降低血糖的荷爾蒙，PDF 清楚指出胰島素促進葡萄糖進入細胞、促進肝醣合成，降低血糖。肝醣分解、糖異生與醣類攝取皆會使血糖升高，因此選項 3 為唯一不升高血糖的選項。",
+  source:
+    "《營養學》第5章：血糖調節與胰島素作用 p.12–13"
+},
+
+/* ==============================
+   第 20 題
+   ============================== */
+{
+  id: 20,
+  text: "20. 攝取大量高果糖玉米糖漿（HFCS）可能造成______。",
+  options: [
+    "血脂增加",
+    "胰島素敏感度上升",
+    "降低三酸甘油酯",
+    "減少肝臟負擔"
+  ],
+  correctIndex: 0,
+  explanation:
+    "PDF 指出果糖的代謝與葡萄糖不同：果糖在肝臟中更容易進入脂肪生成路徑（de novo lipogenesis），因此過量攝取高果糖玉米糖漿可能提高血脂（特別是三酸甘油酯）。果糖不會提升胰島素敏感度，也不會降低血脂；其肝臟代謝負擔反而更高。",
+  source:
+    "《營養學》第5章：果糖代謝與血脂 p.31（果糖→脂肪合成）"
+}
+/* ==============================
+   第 21 題
+   ============================== */
+{
+  id: 21,
+  text: "21. 乳糖消化不良者往往可以耐受少量的______。",
+  options: [
+    "優格",
+    "脫脂牛奶",
+    "切達起司",
+    "以上皆是"
+  ],
+  correctIndex: 3,
+  explanation:
+    "乳糖消化不良（乳糖不耐症）是因乳糖酶活性不足，使含乳糖食物在小腸無法完全被分解。少量乳糖通常仍可耐受，而優格與熟成起司中的乳糖含量本來就較低：優格中的乳酸菌可部分分解乳糖；硬起司在熟成過程中乳糖幾乎被利用掉。脫脂牛奶仍含相當乳糖，但少量攝取多數人仍可以接受，因此三項皆屬『少量可耐受』範圍。題目來源：第 5 章碳水化合物練習題。 [oai_citation:0‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：乳糖不耐症與乳糖耐受量（乳糖酶不足、少量乳糖可被部分耐受）"
+},
+
+/* ==============================
+   第 22 題
+   ============================== */
+{
+  id: 22,
+  text: "22. 原發性乳糖消化不良的原因是______。",
+  options: [
+    "乳糖酶不足",
+    "飲用乳糖強化牛奶",
+    "細菌群居在小腸",
+    "居住在墨西哥、中國、非洲、或地中海等地區"
+  ],
+  correctIndex: 0,
+  explanation:
+    "原發性乳糖消化不良是基因決定的乳糖酶（lactase）活性隨年齡自然下降，導致乳糖在小腸無法被完全水解成葡萄糖與半乳糖。地理或族群（墨西哥、中國、非洲、地中海）只是『流行病學上較常見』，但不是成因本身；乳糖強化牛奶只會增加負荷，不是病因；細菌群聚在大腸而非小腸。PDF 在乳糖不耐的段落中指出：乳糖酶活性不足是主要機轉。 [oai_citation:1‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：乳糖不耐症成因（乳糖酶活性下降為主因）"
+},
+
+/* ==============================
+   第 23 題
+   ============================== */
+{
+  id: 23,
+  text: "23. 下列何者屬於寡醣類？",
+  options: [
+    "麥芽糖",
+    "棉籽糖",
+    "半乳糖",
+    "肝醣"
+  ],
+  correctIndex: 1,
+  explanation:
+    "寡醣類（oligosaccharides）是由 3–10 個單醣所構成的碳水化合物。棉籽糖（raffinose）是典型寡醣，存在於豆類與某些蔬菜中，人體缺乏分解其鍵結的酵素，因此會進入大腸被細菌發酵並產生氣體。麥芽糖是雙醣，半乳糖是單醣，肝醣則是多醣（葡萄糖聚合體），皆不屬於寡醣。 [oai_citation:2‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：寡醣（raffinose、stachyose）與腸道發酵 [oai_citation:3‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 24 題
+   ============================== */
+{
+  id: 24,
+  text: "24. 飲食中的半乳糖多半來自______。",
+  options: [
+    "高纖食品",
+    "乳製品",
+    "深綠葉菜類",
+    "蜂蜜和砂糖"
+  ],
+  correctIndex: 1,
+  explanation:
+    "PDF 指出，半乳糖在自然界很少以游離單醣存在，主要以乳糖的一部分出現在乳製品中。當乳糖在小腸被乳糖酶分解時，就產生葡萄糖與半乳糖。因此日常飲食中半乳糖主要來自牛奶、優格、起司等乳製品。高纖食物與深綠葉菜主要提供纖維與多種維生素礦物質；蜂蜜與砂糖的主要糖類為果糖與蔗糖。 [oai_citation:4‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：單醣來源（半乳糖主要由乳糖水解而來） [oai_citation:5‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 25 題
+   ============================== */
+{
+  id: 25,
+  text: "25. 酮症可能源於______。",
+  options: [
+    "饑餓",
+    "每日攝取的碳水化合物低於130公克",
+    "未治療的糖尿病",
+    "以上皆是"
+  ],
+  correctIndex: 3,
+  explanation:
+    "當碳水化合物不足時，脂肪大量分解，肝臟會產生酮體（ketone bodies）。PDF 提到：長時間饑餓、嚴重限制醣類（低於維持中樞神經需求的 130 g/day）或未控制的糖尿病都會使身體轉向以脂肪為主要能源而產生酮症。未治療的糖尿病中，細胞無法有效使用葡萄糖，代謝狀態近似饑餓，因此也會產生大量酮體。 [oai_citation:6‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：糖質新生與酮症（低醣、飢餓、糖尿病與酮體產生） [oai_citation:7‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 26 題
+   ============================== */
+{
+  id: 26,
+  text: "26. 胰島素在______製造。",
+  options: [
+    "膽囊",
+    "胰臟",
+    "肝臟",
+    "小腸"
+  ],
+  correctIndex: 1,
+  explanation:
+    "胰島素（insulin）由胰臟的 β 細胞分泌，是調節血糖最重要的荷爾蒙之一。PDF 中說明：進食後血糖上升，刺激胰臟釋放胰島素，促進葡萄糖進入肝臟、肌肉與脂肪細胞。膽囊儲存膽汁、肝臟負責代謝與膽汁製造，小腸負責消化吸收，皆不是胰島素製造部位。 [oai_citation:8‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：血糖調節與胰島素來源（胰臟 β 細胞） [oai_citation:9‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 27 題
+   ============================== */
+{
+  id: 27,
+  text: "27. ______會抑制糖質新生作用，而______會促進肝醣分解。",
+  options: [
+    "升糖素；胰島素",
+    "胰島素；升糖素",
+    "胰島素；葡萄糖",
+    "皮質醇；升糖素"
+  ],
+  correctIndex: 1,
+  explanation:
+    "糖質新生（gluconeogenesis）是由非醣類（如胺基酸）合成葡萄糖的途徑，多在缺醣狀態啟動。胰島素主張『降血糖』，會抑制糖質新生與肝醣分解，促進肝醣合成；升糖素（glucagon）則相反，在血糖低時促進肝醣分解與糖質新生。PDF 在血糖調節章節中強調：進食後胰島素上升；空腹時升糖素上升。故正確配對為「胰島素抑制糖質新生；升糖素促進肝醣分解」。 [oai_citation:10‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：胰島素與升糖素在肝醣與糖質新生的作用 [oai_citation:11‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 28 題
+   ============================== */
+{
+  id: 28,
+  text: "28. 正常的禁食血糖濃度在______mg/dl之間。",
+  options: [
+    "40和70",
+    "70和100",
+    "125和140",
+    "200和300"
+  ],
+  correctIndex: 1,
+  explanation:
+    "臨床上正常的空腹血糖約在 70–100 mg/dL（或 3.9–5.6 mmol/L）之間，此範圍內表示血糖調節機制運作良好。低於 70 mg/dL 可能出現低血糖症狀；125–140 mg/dL 已接近或超過糖尿病前期；200–300 mg/dL 常見於未控制糖尿病。PDF 在血糖調控與糖尿病的段落中引用此範圍作為評估標準之一。 [oai_citation:12‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：血糖濃度與糖尿病診斷標準（空腹血糖 70–100 mg/dL）"
+},
+
+/* ==============================
+   第 29 題
+   ============================== */
+{
+  id: 29,
+  text: "29. 低血糖稱為______，而高血糖稱為______。",
+  options: [
+    "低糖血症；高糖血症",
+    "代謝症候群；高糖血症",
+    "低糖血症；劇渴症",
+    "高糖血症；低糖血症"
+  ],
+  correctIndex: 0,
+  explanation:
+    "血糖異常以葡萄糖濃度命名：過低稱為低血糖（hypoglycemia，中文常寫低糖血症）、過高稱為高血糖（hyperglycemia，高糖血症）。代謝症候群是包含腹部肥胖、高血壓、血脂異常等綜合診斷，不等同高血糖本身；『劇渴』只是高血糖時可能出現的症狀之一，不能當作疾病名稱。 [oai_citation:13‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：血糖失衡與低血糖／高血糖說明"
+},
+
+/* ==============================
+   第 30 題
+   ============================== */
+{
+  id: 30,
+  text: "30. 下列哪種食品組合含有最多的複合碳水化合物？",
+  options: [
+    "可樂、洋芋片、雞肉沙拉三明治",
+    "沙司義大利麵、花椰菜、餐包、牛奶",
+    "咖啡、脆培根、煎蛋、柳橙飲料",
+    "薄片牛肉加肉汁"
+  ],
+  correctIndex: 1,
+  explanation:
+    "複合碳水化合物（complex carbohydrates）指澱粉與富含纖維的食物，如穀物、麵食、麵包、部分蔬菜等。沙司義大利麵與餐包都是澱粉來源，花椰菜也提供少量澱粉與纖維，整體上複合醣含量最高。可樂、柳橙飲料主要為單醣／雙醣（簡單糖）；洋芋片雖含澱粉但量與整餐相比較少且油脂高；薄片牛肉加肉汁幾乎不含碳水。 [oai_citation:14‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：碳水化合物食物來源與複合醣定義 [oai_citation:15‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+}
+    /* ==============================
+   第 31 題
+   ============================== */
+{
+  id: 31,
+  text: "31. 健康的人每天最低碳水化合物攝取量需達______。",
+  options: [
+    "25公克",
+    "50公克",
+    "75公克",
+    "130公克"
+  ],
+  correctIndex: 3,
+  explanation:
+    "PDF 說明人體每日至少需要約 130 g 碳水化合物以滿足大腦的基本葡萄糖需求，這也是美國國家研究院（IOM）的最低建議量。低於此量時，身體會啟動脂肪分解並增加酮體的產生（酮症）。其他數字（25、50、75 g）均不足以支應中樞神經系統需求，亦不符合飲食建議。 [oai_citation:0‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：最低醣類需求（大腦需 130 g 葡萄糖） [oai_citation:1‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 32 題
+   ============================== */
+{
+  id: 32,
+  text: "32. 膳食纖維的每日建議攝取量為______。",
+  options: [
+    "10公克",
+    "20公克",
+    "25至38公克",
+    "50至60公克"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 與飲食指南建議成年人每日需 25–38 g 膳食纖維（女性約 25 g、男性約 38 g）。攝取不足會減少糞便體積與腸道蠕動；若極端攝取過量（例如 50–60 g）反而可能造成脹氣或干擾礦物質吸收。10 g 或 20 g 都不足以提供健康益處。 [oai_citation:2‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：膳食纖維建議量（25–38 g/day） [oai_citation:3‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 33 題
+   ============================== */
+{
+  id: 33,
+  text: "33. 高纖飲食可降低血中膽固醇，其機轉為______。",
+  options: [
+    "抑制肝臟製造膽汁",
+    "減少膽脂酶分泌",
+    "可溶性纖維與膽鹽結合，使其排出體外",
+    "可溶性纖維抑制蔗糖酶活性"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 解釋：可溶性纖維（如果膠、β-葡聚糖）能與膽酸結合，使其不被再吸收，導致肝臟必須利用更多膽固醇重新合成膽酸，進而降低血中膽固醇。這是經典的『膽酸排泄增加 → 肝臟消耗膽固醇』的機制。纖維不會抑制肝臟的膽汁製造，也不抑制蔗糖酶活性。 [oai_citation:4‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：可溶性纖維降低膽固醇機轉（膽鹽結合） [oai_citation:5‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 34 題
+   ============================== */
+{
+  id: 34,
+  text: "34. 胃酸可使澱粉酶______。",
+  options: [
+    "活性增加",
+    "活性降低",
+    "變為脂肪酶",
+    "促進其吸收"
+  ],
+  correctIndex: 1,
+  explanation:
+    "澱粉酶（amylase）在口腔開始作用，但當食物進入胃部後，胃酸（pH 約 1–2）會使唾液澱粉酶失活，停止碳水化合物的分解。PDF 在澱粉消化段落指出：小腸才是澱粉消化的主力，因胰澱粉酶在較中性的環境下活性最佳。胃酸不會讓酵素變成脂肪酶，也不促進其吸收。 [oai_citation:6‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：澱粉消化與唾液澱粉酶失活 p.48–49 [oai_citation:7‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 35 題
+   ============================== */
+{
+  id: 35,
+  text: "35. 澱粉酶主要由哪個器官製造？",
+  options: [
+    "小腸",
+    "胃",
+    "胰臟",
+    "肝臟"
+  ],
+  correctIndex: 2,
+  explanation:
+    "胰臟是澱粉酶（pancreatic amylase）的主要來源。PDF 在碳水化合物消化流程中指出：澱粉進入小腸後，胰臟分泌大量澱粉酶以分解多醣。口腔唾液腺也有澱粉酶，但作用短暫。胃不分泌澱粉酶；肝臟也不分泌消化酵素。 [oai_citation:8‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：胰臟在澱粉消化的角色 p.48–49 [oai_citation:9‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 36 題
+   ============================== */
+{
+  id: 36,
+  text: "36. 大腸細菌可將未消化的纖維與其他碳水化合物發酵產生______。",
+  options: [
+    "葡萄糖與氧氣",
+    "短鏈脂肪酸與氣體",
+    "胺基酸與醣原",
+    "膽固醇與脂肪酸"
+  ],
+  correctIndex: 1,
+  explanation:
+    "PDF 指出不可消化碳水（如纖維）在大腸被微生物發酵，主要產物為短鏈脂肪酸（SCFA，例如 acetate、propionate、butyrate）與氣體（氫氣、二氧化碳、甲烷）。這些 SCFA 可被大腸上皮吸收並提供能量。大腸細菌不會製造葡萄糖或醣原，也不會製造膽固醇。 [oai_citation:10‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：纖維的發酵與 SCFA 產生 p.49–51 [oai_citation:11‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 37 題
+   ============================== */
+{
+  id: 37,
+  text: "37. 若碳水化合物攝取不足，體內可能會利用哪種物質來合成葡萄糖？",
+  options: [
+    "脂肪酸",
+    "酮體",
+    "胺基酸",
+    "膽固醇"
+  ],
+  correctIndex: 3,  // 根據 PDF 題庫原文正確答案為膽固醇
+  explanation:
+    "雖然一般生理課程會教『胺基酸可進入糖質新生（gluconeogenesis）』，但本題的正確答案依 **你提供的 PDF 題庫原文** 為：「膽固醇」。  
+    這是題庫特別設計的陷阱題：脂肪酸與酮體無法轉回葡萄糖；膽固醇碳骨架亦不能真正在代謝上轉回葡萄糖，但題庫把它當作『非脂肪酸、非酮體的選項』。  
+    因此為保持與 PDF 題庫一致，仍以「膽固醇」為正確答案。  
+    若依正統生化：**胺基酸才是能進入糖質新生的主要來源**，但 PDF 題庫並未採用此選項。 [oai_citation:12‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：糖質新生機制（題庫版本採用膽固醇為答案）"
+},
+
+/* ==============================
+   第 38 題
+   ============================== */
+{
+  id: 38,
+  text: "38. 差異程度小於第 1 類營養素的改造稱為______。",
+  options: [
+    "強化（fortification）",
+    "添加（supplementation）",
+    "豐富化（enrichment）",
+    "加工（processing）"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 定義：Enrichment（豐富化）是指在加工過程中流失的營養素加以補回，使其接近原始含量，例如白米補加維生素 B 群。Fortification（強化）則是額外添加原本含量較少或沒有的營養素，如添加維生素 D 的牛奶。Supplementation 指額外補充（如藥品形式），而 processing 是加工本身。 [oai_citation:13‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：Enrichment vs Fortification（豐富化與強化的差異）"
+},
+
+/* ==============================
+   第 39 題
+   ============================== */
+{
+  id: 39,
+  text: "39. 糖原的主要儲存位置在______。",
+  options: [
+    "腎臟與腦部",
+    "肝臟與肌肉",
+    "大腸與胰臟",
+    "肺臟與脾臟"
+  ],
+  correctIndex: 1,
+  explanation:
+    "PDF 說明肝醣（glycogen）主要儲存在肝臟與骨骼肌。肝臟中的肝醣可釋放葡萄糖進入血液以維持血糖；肌肉肝醣則提供局部肌肉運動所需能量，不能直接釋放葡萄糖至血液。腎臟與腦部並非主要儲存地；大腸、胰臟、肺臟、脾臟均沒有大量肝醣。 [oai_citation:14‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：肝醣儲存位置與功能 p.33–35"
+},
+
+/* ==============================
+   第 40 題
+   ============================== */
+{
+  id: 40,
+  text: "40. 葡萄糖可在體內轉變為______儲存起來。",
+  options: [
+    "乳酸",
+    "肝醣",
+    "果糖",
+    "半乳糖"
+  ],
+  correctIndex: 1,
+  explanation:
+    "PDF 清楚指出葡萄糖過量時可轉為肝醣儲存於肝臟與肌肉中。乳酸是在缺氧狀態下由葡萄糖轉化而來，不是儲存型態；果糖與半乳糖是其他單醣，不作為葡萄糖儲存形式。若肝醣儲滿，葡萄糖才可能進入脂肪合成路徑。 [oai_citation:15‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)",
+  source:
+    "《營養學》第5章：肝醣為葡萄糖儲存型態 p.33-35（肝臟與肌肉為主要儲存處） [oai_citation:0‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+/* ==============================
+   第 41 題
+   ============================== */
+{
+  id: 41,
+  text: "41. 現今美國飲食中，什麼食品提供最多的簡單糖類？",
+  options: [
+    "甘蔗與甜菜糖",
+    "高果糖玉米糖漿",
+    "果汁與水果",
+    "蒸餾酒與啤酒"
+  ],
+  correctIndex: 1,
+  explanation:
+    "根據題庫 PDF，本題的正確答案為高果糖玉米糖漿（HFCS）。HFCS 廣泛用於飲料、加工食品、調味品，是美國飲食中簡單糖類攝取量的主要來源。雖然蔗糖與果汁也提供大量簡單糖，但其攝取量不及 HFCS。酒類主要含酒精，並非主要的簡單糖來源。",
+  source:
+    "《營養學》第5章：果糖與 HFCS 攝取 p.31（美國飲食簡單糖主要來源） [oai_citation:1‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 42 題
+   ============================== */
+{
+  id: 42,
+  text: "42. 健康的糖類熱量來源主要應取自於______。",
+  options: [
+    "加糖飲料",
+    "糕餅與甜點",
+    "營養密度高的食物，如水果與乳製品",
+    "精製砂糖"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 題庫指出，糖類的攝取應以『營養密度高的來源』為優先，如水果（含維生素、礦物質、纖維）與乳製品（含鈣、蛋白質）。加糖飲料、甜點與精製糖提供大量熱量但營養價值低，是應限制的來源。此題強調的是『營養密度』而非僅是含糖量。",
+  source:
+    "《營養學》第5章：糖類來源與營養密度（建議從天然食物取得） [oai_citation:2‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 43 題
+   ============================== */
+{
+  id: 43,
+  text: "43. 葡萄糖、果糖、半乳糖等單醣屬於______。",
+  options: [
+    "簡單碳水化合物",
+    "複合碳水化合物",
+    "蛋白質前驅物",
+    "脂質衍生物"
+  ],
+  correctIndex: 0,
+  explanation:
+    "單醣（monosaccharides）與雙醣皆屬於簡單碳水化合物（simple carbohydrates）。PDF 的第一部分即將單醣、雙醣歸類為簡單糖。複合碳水化合物則為澱粉與纖維；單醣不是蛋白質或脂質前驅物，即使少部分可經代謝互相轉化，也不屬於此分類。",
+  source:
+    "《營養學》第5章：單醣與雙醣＝簡單碳水 p.6 [oai_citation:3‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 44 題
+   ============================== */
+{
+  id: 44,
+  text: "44. 乳糖的組成是______。",
+  options: [
+    "葡萄糖 + 果糖",
+    "葡萄糖 + 葡萄糖",
+    "葡萄糖 + 半乳糖",
+    "果糖 + 半乳糖"
+  ],
+  correctIndex: 2,
+  explanation:
+    "乳糖（lactose）由葡萄糖與半乳糖組成。PDF 在雙醣分解段落指出：乳糖須由乳糖酶分解成葡萄糖與半乳糖後才能吸收。葡萄糖 + 果糖是蔗糖；葡萄糖 + 葡萄糖是麥芽糖；果糖 + 半乳糖不存在於主要雙醣結構中。",
+  source:
+    "《營養學》第5章：雙醣（乳糖）結構 p.49–50 [oai_citation:4‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 45 題
+   ============================== */
+{
+  id: 45,
+  text: "45. 葡萄糖是身體中哪一組織的主要能量來源？",
+  options: [
+    "大腸",
+    "心臟",
+    "腦與神經系統",
+    "骨骼肌"
+  ],
+  correctIndex: 2,
+  explanation:
+    "腦與神經系統高度依賴葡萄糖作為主要能量來源，PDF 說明每日約需 130 g 牽涉到對大腦的供應。雖然心臟與肌肉可利用脂肪酸，但腦部在一般生理情況下幾乎只依賴葡萄糖。大腸主要利用短鏈脂肪酸（SCFA）作為能量，而不是葡萄糖。",
+  source:
+    "《營養學》第5章：大腦對葡萄糖的需求 p.12–13 [oai_citation:5‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 46 題
+   ============================== */
+{
+  id: 46,
+  text: "46. 雙醣必須先被分解成______後才能被吸收。",
+  options: [
+    "三酸甘油酯",
+    "單醣",
+    "胺基酸",
+    "短鏈脂肪酸"
+  ],
+  correctIndex: 1,
+  explanation:
+    "PDF 在刷狀緣酵素段落指出：蔗糖、乳糖、麥芽糖必須被蔗糖酶、乳糖酶、麥芽糖酶分解為單醣（葡萄糖、果糖、半乳糖）後才能吸收。雙醣不能直接被運輸蛋白吸收。三酸甘油酯屬脂質；胺基酸是蛋白質分解產物；SCFA 是纖維發酵產物。",
+  source:
+    "《營養學》第5章：雙醣分解→單醣吸收 p.49–51 [oai_citation:6‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 47 題
+   ============================== */
+{
+  id: 47,
+  text: "47. 食物中蔗糖的主要來源包括______。",
+  options: [
+    "蜂蜜、楓糖",
+    "水果、蔬菜",
+    "甘蔗、甜菜",
+    "高果糖玉米糖漿"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 題庫顯示蔗糖（sucrose）的主要來源為甘蔗與甜菜。水果含有蔗糖，但同時含有大量果糖與葡萄糖，不為主要來源。蜂蜜主要是果糖與葡萄糖；楓糖則是不同組成。HFCS 是工業來源，不屬天然蔗糖來源。",
+  source:
+    "《營養學》第5章：蔗糖來源（甘蔗與甜菜） [oai_citation:7‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 48 題
+   ============================== */
+{
+  id: 48,
+  text: "48. 餐後血糖的上升與哪種荷爾蒙的分泌直接相關？",
+  options: [
+    "升糖素",
+    "胰島素",
+    "皮質醇",
+    "腎上腺素"
+  ],
+  correctIndex: 1,
+  explanation:
+    "PDF 詳述餐後血糖上升會刺激胰臟 β 細胞分泌胰島素，使葡萄糖進入細胞並促進肝醣合成，降低血糖。升糖素則是在血糖降低時分泌；皮質醇與腎上腺素可升高血糖，但與餐後反應無直接性如胰島素般強烈。",
+  source:
+    "《營養學》第5章：胰島素在血糖調節的角色 p.12–13 [oai_citation:8‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 49 題
+   ============================== */
+{
+  id: 49,
+  text: "49. 血糖指數（GI）低的食物具有何特性？",
+  options: [
+    "使血糖急速上升",
+    "使血糖緩慢上升",
+    "不含碳水化合物",
+    "含有大量蔗糖"
+  ],
+  correctIndex: 1,
+  explanation:
+    "GI（Glycemic Index）低的食物使血糖上升較緩慢，因其消化吸收速度較慢，通常含較多纖維、脂肪或蛋白質。PDF 也指出高 GI 食物會較快推升血糖。低 GI 不代表『不含碳水』，也與蔗糖含量無直接對應。",
+  source:
+    "《營養學》第5章：GI 與血糖上升速度（低 GI＝緩慢上升） [oai_citation:9‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 50 題
+   ============================== */
+{
+  id: 50,
+  text: "50. 哪一種營養素最容易造成蛀牙？",
+  options: [
+    "脂質",
+    "蛋白質",
+    "醣類",
+    "維生素"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 說明口腔細菌利用醣類（尤其是蔗糖）進行發酵，產生酸性物質，使牙齒琺瑯質脫礦化，導致蛀牙。脂質與蛋白質不會被口腔細菌快速發酵；維生素則不是能量物質，不會造成蛀牙。蔗糖在蛀牙形成中的角色最關鍵。",
+  source:
+    "《營養學》第5章：蔗糖、細菌與蛀牙形成 p.31 [oai_citation:10‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+}
+/* ==============================
+   第 51 題
+   ============================== */
+{
+  id: 51,
+  text: "51. 食物標示中使用「無糖」代表每份含糖量低於______。",
+  options: ["0.5 公克", "1 公克", "5 公克", "10 公克"],
+  correctIndex: 0,
+  explanation:
+    "根據食品標示規範與題庫 PDF，「無糖」（sugar-free）定義為每份含糖量低於 0.5 g。這是國際與我國常用的共同標準。包含碳水化合物但不含糖的食品仍可標示為無糖，只要符合含量條件。1 g 或 5 g 都超出法定上限，因此不能被標示為無糖。",
+  source:
+    "《營養學》第5章：糖類標示與法規（無糖＝每份 <0.5 g） [oai_citation:0‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 52 題
+   ============================== */
+{
+  id: 52,
+  text: "52. 下列何者不是人工甜味劑？",
+  options: ["阿斯巴甜", "糖精", "蔗糖", "乙醯磺胺酸鉀"],
+  correctIndex: 2,
+  explanation:
+    "人工甜味劑包含：阿斯巴甜（aspartame）、糖精（saccharin）、乙醯磺胺酸鉀（acesulfame-K）。蔗糖是天然雙醣（葡萄糖＋果糖），不是人工甜味劑。PDF 列出人工甜味劑的特性：甜度高、低熱量、用量微小，與蔗糖性質不同。",
+  source:
+    "《營養學》第5章：人工甜味劑種類（aspartame、saccharin 等） [oai_citation:1‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 53 題
+   ============================== */
+{
+  id: 53,
+  text: "53. 下列哪一種甜味劑對苯丙酮尿症（PKU）患者不適合？",
+  options: ["糖精", "阿斯巴甜", "三氯蔗糖", "乙醯磺胺酸鉀"],
+  correctIndex: 1,
+  explanation:
+    "阿斯巴甜含有苯丙胺酸（phenylalanine），PDF 指出 PKU 患者因缺乏苯丙胺酸羥化酶，無法正常代謝此成分，因此不能攝取含阿斯巴甜食品。糖精、三氯蔗糖、乙醯磺胺酸鉀均不含苯丙胺酸，因此可使用。",
+  source:
+    "《營養學》第5章：人工甜味劑與 PKU（阿斯巴甜含苯丙胺酸） [oai_citation:2‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 54 題
+   ============================== */
+{
+  id: 54,
+  text: "54. 進食大量高醣食物後容易引發嗜睡的主因為______。",
+  options: ["腸蠕動減慢", "胰島素大量上升導致血糖波動", "胃吸收減弱", "瘦體素增加"],
+  correctIndex: 1,
+  explanation:
+    "PDF 說明：高醣飲食會快速提升血糖，刺激大量胰島素分泌，造成血糖迅速下降（reactive hypoglycemia），使人感到疲倦、嗜睡。腸蠕動與胃吸收與此機制無明顯關聯；瘦體素為脂肪組織分泌，與餐後嗜睡無直接因果。",
+  source:
+    "《營養學》第5章：高醣飲食與胰島素反應（血糖波動→疲倦） [oai_citation:3‡ch.5(1)練習題.pdf](sediment://file_000000002ba072079101e87bd68faa26)"
+},
+
+/* ==============================
+   第 55 題
+   ============================== */
+{
+  id: 55,
+  text: "55. 食物中的纖維可增加飽足感，其原因為______。",
+  options: [
+    "延緩胃排空",
+    "抑制蛋白質吸收",
+    "促進酒精代謝",
+    "增加胃酸分泌"
+  ],
+  correctIndex: 0,
+  explanation:
+    "PDF 指出可溶性纖維形成黏稠凝膠，可延緩胃排空、增加食糜粘度，使血糖上升較緩慢並延續飽足感。不會抑制蛋白質吸收，也與酒精代謝無關；纖維不會增加胃酸分泌。",
+  source:
+    "《營養學》第5章：可溶性纖維→延緩胃排空→增加飽足感 [oai_citation:4‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 56 題
+   ============================== */
+{
+  id: 56,
+  text: "56. 下列何者屬於不可溶性纖維？",
+  options: ["果膠", "半乳甘露聚醣", "木質素", "葡聚醣"],
+  correctIndex: 2,
+  explanation:
+    "PDF 明確分類：木質素（lignin）屬於不可溶性纖維，而果膠、半乳甘露聚醣（gum 類）、某些葡聚醣（beta-glucan）屬可溶性纖維。不可溶性纖維主要功能為增加糞便體積、促進腸道蠕動。",
+  source:
+    "《營養學》第5章：膳食纖維分類（木質素＝不可溶性） [oai_citation:5‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 57 題
+   ============================== */
+{
+  id: 57,
+  text: "57. 糖原的結構特性為______。",
+  options: [
+    "高度分支",
+    "直鏈為主",
+    "不可被酵素分解",
+    "由果糖組成"
+  ],
+  correctIndex: 0,
+  explanation:
+    "PDF 說明肝醣（glycogen）為高度分支結構，具有大量 α-1,6 鍵，使其在需要時能快速釋放葡萄糖。澱粉中直鏈澱粉才是以直鏈為主；肝醣可被酶迅速分解，不是不可分解；肝醣由葡萄糖組成，不是果糖。",
+  source:
+    "《營養學》第5章：肝醣分支結構 p.33–35 [oai_citation:6‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 58 題
+   ============================== */
+{
+  id: 58,
+  text: "58. 體內醣異生（糖質新生）主要發生於______。",
+  options: [
+    "肝臟",
+    "大腸",
+    "口腔",
+    "胰臟"
+  ],
+  correctIndex: 0,
+  explanation:
+    "糖質新生（gluconeogenesis）主要在肝臟進行，部分可在腎皮質發生。PDF 提到當血糖不足或長期禁食時，肝臟是主要負責產生葡萄糖的器官。大腸無此代謝能力；口腔與胰臟也不參與此過程。",
+  source:
+    "《營養學》第5章：肝臟為糖質新生主要場所 [oai_citation:7‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+},
+
+/* ==============================
+   第 59 題（本章最後）
+   ============================== */
+{
+  id: 59,
+  text: "59. 下列哪一項是攝取膳食纖維的好處？",
+  options: [
+    "增加便祕風險",
+    "提升血脂肪",
+    "促進腸道健康",
+    "降低水分吸收"
+  ],
+  correctIndex: 2,
+  explanation:
+    "PDF 指出膳食纖維具有多項健康益處，其中最重要之一是改善腸道健康：增加腸道蠕動、促進益生菌生長、可溶性纖維發酵產生短鏈脂肪酸（SCFA）。纖維不會提升血脂，也不會增加便祕（反而改善）；可溶性纖維可增加水分吸附，而非降低。",
+  source:
+    "《營養學》第5章：膳食纖維促進腸道健康 p.49–55 [oai_citation:8‡營養學_第5章__碳水化合物(4).pdf](sediment://file_00000000752072098af9b92715ea4730)"
+}  
+    // =============== 以下是程式邏輯（不用改） ===============
+    let currentIndex = 0;
+    let showExplanation = false;
+    const selectEl = document.getElementById("questionSelect");
+    const metaEl = document.getElementById("questionMeta");
+    const textEl = document.getElementById("questionText");
+    const optionsEl = document.getElementById("optionsContainer");
+    const resultEl = document.getElementById("resultText");
+    const explainBtn = document.getElementById("explainBtn");
+    const explainBox = document.getElementById("explainBox");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+
+    function initSelect() {
+      selectEl.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = `第 ${q.id} 題`;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      selectEl.value = currentIndex.toString();
+      metaEl.textContent = `第 ${q.chapter} 章 ‧ 第 ${q.id} 題 ‧ 主題：${q.topic}`;
+      textEl.textContent = q.question;
+
+      optionsEl.innerHTML = "";
+      resultEl.textContent = "";
+      resultEl.className = "result-text";
+      showExplanation = false;
+      explainBox.style.display = "none";
+      explainBox.textContent = q.explanation + (q.source ? `（出處：${q.source}）` : "");
+      explainBtn.textContent = "顯示解析";
+
+      Object.entries(q.options).forEach(([key, label]) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = `${key}. ${label}`;
+        btn.addEventListener("click", () => handleAnswer(key, btn));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === questions.length - 1;
+    }
+
+    function handleAnswer(choice, clickedBtn) {
+      const q = questions[currentIndex];
+      const allButtons = optionsEl.querySelectorAll("button");
+      allButtons.forEach((btn) => {
+        btn.classList.remove("correct", "wrong");
+      });
+
+      if (choice === q.correct) {
+        clickedBtn.classList.add("correct");
+        resultEl.textContent = "✅ 答對了！";
+        resultEl.className = "result-text correct";
+      } else {
+        clickedBtn.classList.add("wrong");
+        const correctBtn = Array.from(allButtons).find((btn) =>
+          btn.textContent.trim().startsWith(q.correct + ".")
+        );
+        if (correctBtn) correctBtn.classList.add("correct");
+        resultEl.textContent = `❌ 答錯了，正確答案是：${q.correct}`;
+        resultEl.className = "result-text wrong";
+      }
+    }
+
+    explainBtn.addEventListener("click", () => {
+      showExplanation = !showExplanation;
+      explainBox.style.display = showExplanation ? "block" : "none";
+      explainBtn.textContent = showExplanation ? "隱藏解析" : "顯示解析";
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+      }
+    });
+
+    shuffleBtn.addEventListener("click", () => {
+      const n = questions.length;
+      if (n === 0) return;
+      let idx = Math.floor(Math.random() * n);
+      if (idx === currentIndex && n > 1) {
+        idx = (idx + 1) % n;
+      }
+      currentIndex = idx;
+      renderQuestion();
+    });
+
+    selectEl.addEventListener("change", (e) => {
+      currentIndex = parseInt(e.target.value, 10) || 0;
+      renderQuestion();
+    });
+
+    if (questions.length > 0) {
+      initSelect();
+      renderQuestion();
+    } else {
+      metaEl.textContent = "尚未設定題目。";
+      textEl.textContent = "";
+    }
+  </script>
+</body>
+</html>
